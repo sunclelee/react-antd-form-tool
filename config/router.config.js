@@ -1,6 +1,6 @@
 export default [
   {
     path: '/',
-    component: './content',
+    component: './form-config',
   },
 ];

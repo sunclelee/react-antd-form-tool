@@ -1,0 +1,88 @@
+.formItem {
+  width: 100%;
+  // border: 1px dashed rebeccapurple;
+  padding: 5px;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  cursor: move;
+  background-color: #f9fcff;
+  // :hover {
+  //   background-color: red;
+  // }
+  :global {
+    // 徽标样式
+    .ant-badge-not-a-wrapper {
+      width: 40px;
+      position: relative;
+      right: -20px;
+      top: -2px;
+    }
+  }
+}
+
+/* 对长表单缩小item间距 */
+.formStyle {
+  :global {
+    .ant-form-item {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.picInspect {
+  :global {
+    // Form.Item多行文字行高
+    .ant-form-item-control {
+      line-height: 20px;
+      margin-top: 10px;
+    }
+  }
+}
+
+.iconStyle {
+  width: 60px;
+  background-color: lightblue;
+  border-radius: 2px;
+  text-align: center;
+  height: 25px;
+}
+
+.photoStyle {
+  display: flex;
+  :global {
+    img {
+      border: 2px solid #e8e8e8;
+      border-radius: 10px;
+      width: 90px;
+      height: 90px;
+      margin-right: 8px;
+    }
+  }
+}
+
+// 上传图标样式
+.upload {
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  width: 90px;
+  height: 90px;
+  text-align: center;
+  i {
+    position: relative;
+    top: 15px;
+  }
+}
+
+.tipText {
+  font-size: 20px;
+  color: grey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.dragClass {
+  border: 2px dashed rebeccapurple;
+  border-radius: 4px;
+}

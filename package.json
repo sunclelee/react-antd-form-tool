@@ -32,6 +32,7 @@
     "antd": "^3.10.4",
     "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
+    "braft-editor": "^2.3.9",
     "classnames": "^2.2.6",
     "dva": "^2.4.0",
     "enquire-js": "^0.2.1",
@@ -53,7 +54,10 @@
     "react-document-title": "^2.0.3",
     "react-dom": "^16.5.1",
     "react-fittext": "^1.0.0",
-    "react-router-dom": "^4.3.1"
+    "react-json-view": "^1.21.3",
+    "react-router-dom": "^4.3.1",
+    "react-sortablejs": "^1.5.1",
+    "sortablejs": "^1.15.2"
   },
   "devDependencies": {
     "@types/react": "^16.4.16",
