@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { PureComponent } from 'react';
 import { Col, Form, Input, message } from 'antd';

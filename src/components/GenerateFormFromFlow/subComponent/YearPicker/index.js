@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React, { PureComponent } from 'react';
 import { DatePicker } from 'antd';
 import PropTypes from 'prop-types';

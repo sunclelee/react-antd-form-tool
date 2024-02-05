@@ -42,7 +42,7 @@ const formItemLayout = {
 };
 
 // 字段改变时改变父data
-const onFieldsChange = (props, changedFields, allFields) => {
+const onFieldsChange = (props, changedFields) => {
   const { changeData, activeItem } = props;
   // 当表单值发生改变后重置表单，会触发onFieldsChange事件，但changeFields里没有value内容，这种情况不需要改变data
   if (
@@ -65,7 +65,6 @@ class ItemFormConfig extends Component {
   renderItemFormConfig = flow => {
     const {
       form: { getFieldDecorator, setFieldsValue, getFieldValue },
-      allFlowData,
     } = this.props;
     switch (flow?.inputType) {
       case 'radio':
@@ -156,80 +155,6 @@ class ItemFormConfig extends Component {
               </Select>
             )}
           </Form.Item>
-        );
-      case 'auto':
-        return (
-          <React.Fragment>
-            <Form.Item label="处理方式" required>
-              {getFieldDecorator('method', {
-                initialValue: (flow && flow.method) || '',
-                rules: [{ required: true, message: '请输入处理方式' }],
-              })(
-                <Select style={{ width: '100%' }}>
-                  {['自动填充', '地图选点', '地图绘制', '关联路线'].map(i => (
-                    <Option key={i}>{i}</Option>
-                  ))}
-                </Select>
-              )}
-            </Form.Item>
-            {getFieldValue('method') === '自动填充' && (
-              <Form.Item label="处理范围" required>
-                {getFieldDecorator('dealRange', {
-                  initialValue: (flow && flow.dealRange) || [],
-                  rules: [{ required: true, message: '请输入处理范围' }],
-                })(
-                  <Select style={{ width: '100%' }} mode="multiple" allowClear>
-                    {treeToFlatData(allFlowData, 'key')
-                      .filter(a =>
-                        ['radio', 'multiple', 'text', 'number', 'cascader', 'date'].includes(
-                          a.inputType
-                        )
-                      )
-                      .map(item => (
-                        <Option key={item.key}>{item.title}</Option>
-                      ))}
-                  </Select>
-                )}
-              </Form.Item>
-            )}
-            {getFieldValue('method') === '地图选点' && (
-              <>
-                <Form.Item label="显示经纬度">
-                  {getFieldDecorator('isShowLatAndLng', {
-                    initialValue: !!_get(flow, 'isShowLatAndLng'),
-                    valuePropName: 'checked',
-                  })(<Checkbox />)}
-                </Form.Item>
-                <Form.Item label="自动计算桩号">
-                  {getFieldDecorator('calcStation', {
-                    initialValue: !!_get(flow, 'calcStation'),
-                    valuePropName: 'checked',
-                  })(<Checkbox />)}
-                </Form.Item>
-                <Form.Item
-                  label={
-                    <>
-                      <Tooltip title="桩号、左右侧、距离的表单直接生成无需另行配置">
-                        <Icon {...this.infoIconParam} />
-                      </Tooltip>
-                      桩号表单绑定
-                    </>
-                  }
-                >
-                  {getFieldDecorator('isBindingStationForm', {
-                    initialValue: !!_get(flow, 'isBindingStationForm'),
-                    valuePropName: 'checked',
-                  })(<Checkbox />)}
-                </Form.Item>
-                <Form.Item label="允许修改省市县">
-                  {getFieldDecorator('allowModifySSX', {
-                    initialValue: !!_get(flow, 'allowModifySSX'),
-                    valuePropName: 'checked',
-                  })(<Checkbox />)}
-                </Form.Item>
-              </>
-            )}
-          </React.Fragment>
         );
       case 'text':
         return (
@@ -558,11 +483,6 @@ class ItemFormConfig extends Component {
                     />
                   )}
                 </Form.Item>
-                {/* <Form.Item label="所属组名">
-              {getFieldDecorator('groupName', {
-                initialValue: _get(flow, 'groupName'),
-              })(<Input />)}
-            </Form.Item> */}
                 {this.renderItemFormConfig(flow)}
                 <Form.Item label="可以不填">
                   {getFieldDecorator('optional', {

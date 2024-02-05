@@ -1,3 +1,7 @@
+/* eslint-disable import/prefer-default-export */
+import React from 'react';
+import { Tooltip, Icon } from 'antd';
+
 /**
  * 渲染表单标题
  * @param {boolean} hideTitle - 是否隐藏标题

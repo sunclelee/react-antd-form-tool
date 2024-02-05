@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-eval */
@@ -40,8 +41,6 @@ class GenerateFormFromFlow extends PureComponent {
   flatAllFlows = []; // 摊平的配置表
 
   show = true; // 本条表单是否显示
-
-  autoFillContent = {}; // 自动填充的内容 Array<code: string, content: string>
 
   componentWillMount() {
     const { formFlowArray = [] } = this.props;
@@ -201,7 +200,6 @@ class GenerateFormFromFlow extends PureComponent {
       defaultValue,
       optional = false,
       placeholder,
-      method,
       precision = 2,
       hideTitle = false, // 数组表单会用到这个值
       dependent,
@@ -451,7 +449,7 @@ class GenerateFormFromFlow extends PureComponent {
         );
       }
       if (inputType === 'radio') {
-        return <RadioCom {...this.props} flow={flow} rules={rules} />;
+        return <RadioCom key={key} {...this.props} flow={flow} rules={rules} />;
       }
       if (inputType === 'container') {
         const { showTitle } = flow;
@@ -575,7 +573,7 @@ class GenerateFormFromFlow extends PureComponent {
 
   render() {
     const { flow = {} } = this.props;
-    return <>{this.renderItem(flow)}</>;
+    return this.renderItem(flow);
   }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { Icon } from 'antd';
 
 /* 在线图标 */

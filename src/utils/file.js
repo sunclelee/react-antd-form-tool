@@ -1,3 +1,5 @@
+import { message } from 'antd';
+
 /**
  * Blob保存为本地文件
  * @param {Blob} obj

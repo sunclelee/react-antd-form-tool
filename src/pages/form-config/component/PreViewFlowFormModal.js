@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { PureComponent } from 'react';
 import { Modal, Form, Row, message } from 'antd';

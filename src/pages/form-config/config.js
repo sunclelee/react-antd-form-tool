@@ -22,7 +22,7 @@ export default {
       json:
         '{"fetchListArray":{"interface":"","queryCondition":{},"dataField":"","valueField":"","textField":""}}',
       defaultValue: 'man',
-      span: 24,
+      span: 12,
     },
     {
       key: '7cfd9ea8-06ad-4cce-8228-2c1cb6c5e65f',
@@ -30,15 +30,67 @@ export default {
       inputType: 'date',
       title: '生日',
       style: '日',
-      span: 24,
+      span: 12,
     },
     {
       key: '8d3b3b67-2f3d-471f-8ba2-f70ce01220a4',
-      code: 'item12',
+      code: 'native',
       inputType: 'cascader',
       title: '籍贯',
       options:
         '[{"label":"重庆市","value":"重庆市","children":[{"label":"重庆市区","value":"重庆市区","children":[{"label":"沙坪坝","value":"沙坪坝"},{"label":"九龙坡","value":"九龙坡"},{"label":"杨家坪","value":"杨家坪"}]}]}]',
+      dependent: { key: '4d605955-7cca-4dcb-92f2-da545d09823e', option: ['man'] },
+      span: 24,
+    },
+    {
+      key: 'c2865ba7-34b1-409a-8fda-4b8b514bd884',
+      code: 'studying',
+      inputType: 'formList',
+      title: '求学经历',
+      span: 24,
+      children: [
+        {
+          key: '0fce84e7-b4a3-42b9-8438-42155b8a9619',
+          code: 'education',
+          inputType: 'radio',
+          title: '学历',
+          style: '下拉',
+          listArray: [
+            { text: '小学', value: '小学', tempId: '5' },
+            { text: '中学', value: '中学', tempId: '23' },
+            { text: '中专', value: '中专', tempId: '102' },
+            { text: '大学', value: '大学', tempId: '62' },
+            { text: '大专', value: '大专', tempId: '163' },
+          ],
+          json:
+            '{"fetchListArray":{"interface":"","queryCondition":{},"dataField":"","valueField":"","textField":""}}',
+          span: 6,
+        },
+        {
+          key: '6655f56b-14e6-4537-a4d6-e73d6923f716',
+          code: 'school',
+          inputType: 'text',
+          title: '学校名称',
+          style: '文本',
+          span: 6,
+        },
+        {
+          key: '0f838e1a-1d86-402f-965a-5c918295e7e8',
+          code: 'start',
+          inputType: 'date',
+          title: '开始日期',
+          style: '日',
+          span: 6,
+        },
+        {
+          key: '6e8babd1-c6a7-4b2e-8bef-cdb341c4a6f0',
+          code: 'end',
+          inputType: 'date',
+          title: '结束日期',
+          style: '日',
+          span: 6,
+        },
+      ],
     },
   ],
   sortableOption: {
