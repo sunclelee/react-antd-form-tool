@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
@@ -126,7 +127,6 @@ class EditableItemsForSelect extends React.PureComponent {
 
 EditableItemsForSelect.defaultProps = {
   showTitle: true,
-  list: [],
 };
 
 EditableItemsForSelect.propTypes = {

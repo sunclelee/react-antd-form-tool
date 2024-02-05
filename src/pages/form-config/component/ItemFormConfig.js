@@ -28,7 +28,7 @@ import {
 import JsonModal from '@/components/JsonEditModal';
 import EditableItemsForSelect from '@/components/GenerateFormFromFlow/subComponent/EditableItemsForSelect';
 import CascaderOptionTree from './CascaderOptionTree';
-import config from '../config';
+import config, { CODE_TOTAL_LENGTH_LIMIT, CODE_PART_LENGTH_LIMIT } from '../config';
 import { getJsonConfigTemplate } from '../fun';
 import style from '../index.less';
 
@@ -107,11 +107,7 @@ class ItemFormConfig extends Component {
             </Form.Item>
             <Form.Item label="选项内容">
               {getFieldDecorator('listArray', {
-                initialValue:
-                  (flow &&
-                    flow.listArray &&
-                    flow.listArray.map(f => ({ ...f, tempId: _uniqueId() }))) ||
-                  [],
+                initialValue: flow.listArray?.map(f => ({ ...f, tempId: _uniqueId() })) || [],
                 valuePropName: 'list',
               })(
                 <EditableItemsForSelect
@@ -485,17 +481,16 @@ class ItemFormConfig extends Component {
   };
 
   checkCodeIsVaild = (rule, value, callback) => {
-    const { codeTotalLength, codePartLength } = this.props;
     if (value) {
-      if (value.length > codeTotalLength) {
-        callback(`编码整体位数应不大于${codeTotalLength}位`);
+      if (value.length > CODE_TOTAL_LENGTH_LIMIT) {
+        callback(`编码整体位数应不大于${CODE_TOTAL_LENGTH_LIMIT}位`);
         return;
       }
       const ele = value.split('.');
       if (ele.some(e => e.length < 2)) {
         callback('每段编码位数应不低于2位');
-      } else if (ele.some(e => e.length > codePartLength)) {
-        callback(`每段编码位数应不大于${codePartLength}位`);
+      } else if (ele.some(e => e.length > CODE_PART_LENGTH_LIMIT)) {
+        callback(`每段编码位数应不大于${CODE_PART_LENGTH_LIMIT}位`);
       } else if (ele.some(e => !/^[a-zA-Z][a-zA-Z0-9]+$/.test(e))) {
         callback('每段编码应为字母开头，仅包含字母或数字');
       } else callback();
@@ -528,7 +523,7 @@ class ItemFormConfig extends Component {
                         message: '请输入标题',
                       },
                     ],
-                  })(<Input.TextArea allowclear="true" autosize={{ minRows: 1, maxRows: 3 }} />)}
+                  })(<Input.TextArea allowclear="true" autoSize={{ minRows: 1, maxRows: 3 }} />)}
                 </Form.Item>
                 {['container'].includes(flow.inputType) ? (
                   <Form.Item label="显示标题">
@@ -578,12 +573,12 @@ class ItemFormConfig extends Component {
                 <Form.Item label="提示说明">
                   {getFieldDecorator('placeholder', {
                     initialValue: _get(flow, 'placeholder'),
-                  })(<Input.TextArea allowclear="true" autosize={{ minRows: 2, maxRows: 4 }} />)}
+                  })(<Input.TextArea allowclear="true" autoSize={{ minRows: 2, maxRows: 4 }} />)}
                 </Form.Item>
                 <Form.Item label="备注">
                   {getFieldDecorator('remark', {
                     initialValue: _get(flow, 'remark'),
-                  })(<Input.TextArea autosize={{ minRows: 2, maxRows: 4 }} />)}
+                  })(<Input.TextArea autoSize={{ minRows: 2, maxRows: 4 }} />)}
                 </Form.Item>
                 <Form.Item label="显示条件">
                   {getFieldDecorator('dependent.key', {
@@ -607,6 +602,8 @@ class ItemFormConfig extends Component {
                         ))}
                     </Select>
                   )}
+                </Form.Item>
+                <Form.Item label=" " colon={false}>
                   {getFieldDecorator('dependent.option', {
                     initialValue: _get(flow, 'dependent.option'),
                   })(
@@ -659,7 +656,7 @@ class ItemFormConfig extends Component {
                 })(
                   <Input.TextArea
                     placeholder="开发人员使用"
-                    autosize={{ minRows: 4, maxRows: 8 }}
+                    autoSize={{ minRows: 4, maxRows: 8 }}
                   />
                 )}
               </Form.Item>

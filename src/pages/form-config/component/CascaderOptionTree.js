@@ -275,7 +275,10 @@ class CascaderOptionTree extends PureComponent {
   }
 }
 
-CascaderOptionTree.defaultProps = {};
+CascaderOptionTree.defaultProps = {
+  src: [],
+  onConfirm: () => {},
+};
 
 CascaderOptionTree.propTypes = {
   src: PropTypes.arrayOf(PropTypes.object),

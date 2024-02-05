@@ -102,6 +102,7 @@ export const operateTree = (action, tree, data, keyField = 'id', value, onlyOne 
  * @returns {any}
  */
 export function JSONparse(str, r = []) {
+  if (!str) return r;
   try {
     return JSON.parse(str);
   } catch (err) {

@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-eval */
 /* eslint-disable no-param-reassign */
@@ -23,7 +24,7 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _intersection from 'lodash/intersection';
 import _range from 'lodash/range';
-import { treeToFlatData, JSONparse, isJSON, checkCascaderOptionIsValid } from '@/utils/common';
+import { treeToFlatData, JSONparse, checkCascaderOptionIsValid } from '@/utils/common';
 import { renderFormItemLabel } from './func';
 import YearPicker from './subComponent/YearPicker';
 import RichTextEditer from './subComponent/RichTextEditor';
@@ -108,8 +109,7 @@ class GenerateFormFromFlow extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     const { from, code } = flow;
-    const splitField = lodash
-      .get(flow, 'splitField', '')
+    const splitField = _get(flow, 'splitField', '')
       .split(',')
       .filter(i => !!i);
     const newValue = splitField.reduce((acc, item, index) => {
@@ -523,8 +523,7 @@ class GenerateFormFromFlow extends PureComponent {
       }
       if (inputType === 'cascader') {
         const { options = '[]', from } = flow;
-        const splitField = lodash
-          .get(flow, 'splitField', '')
+        const splitField = _get(flow, 'splitField', '')
           .split(',')
           .filter(i => !!i);
         let initialValue = defaultValue || [];

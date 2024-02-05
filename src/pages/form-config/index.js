@@ -17,7 +17,6 @@ import {
   message,
   Popconfirm,
   DatePicker,
-  Tag,
   Checkbox,
   Empty,
   Divider,
@@ -30,11 +29,9 @@ import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
 import uuid4 from 'uuid/v4';
 import _get from 'lodash/get';
-import _pick from 'lodash/pick';
 import _uniq from 'lodash/uniq';
 import _cloneDeep from 'lodash/cloneDeep';
 import _uniqueId from 'lodash/uniqueId';
-import PropTypes from 'prop-types';
 import { FormIcon } from '@/components/FormIcon';
 import {
   treeToFlatData,
@@ -48,7 +45,7 @@ import { saveAs, handleLoadfile } from '@/utils/file';
 import ItemFormConfig from './component/ItemFormConfig';
 import PreViewFlowFormModal from './component/PreViewFlowFormModal';
 import { addItemToFlow, getFormItemLayout, ellipsisText, getActiveItemStyle } from './fun';
-import designConfig from './config';
+import designConfig, { formTags } from './config';
 import style from './index.less';
 
 const { Option } = Select;
@@ -60,87 +57,6 @@ class FormDesign extends Component {
     activeItemKey: '', // 选中的表单key
     activeItem: {}, // 选中的表单内容
   };
-
-  formTags = [
-    {
-      icon: 'icondanxuan',
-      label: '单选框',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'radio',
-    },
-    {
-      icon: 'iconduoxuan',
-      label: '多选框',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'multiple',
-    },
-    {
-      icon: 'iconwenben',
-      label: '文本框',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'text',
-    },
-    {
-      icon: 'iconshuzi',
-      label: '数字框',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'number',
-    },
-    {
-      icon: 'iconkaiguan',
-      label: '开关',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'switch',
-    },
-    {
-      icon: 'iconriqiqishu',
-      label: '日期框',
-      hasChidren: false,
-      type: '表单控件',
-      inputType: 'date',
-    },
-    {
-      icon: 'iconjilian',
-      label: '级联选择',
-      hasChidren: true,
-      type: '高级控件',
-      inputType: 'cascader',
-    },
-    {
-      icon: 'iconfuwenben',
-      label: '富文本',
-      hasChidren: false,
-      type: '高级控件',
-      inputType: 'richText',
-    },
-    {
-      icon: 'iconzidong',
-      label: '自动处理',
-      hasChidren: false,
-      type: '高级控件',
-      inputType: 'auto',
-    },
-    // 有children的组件
-    {
-      icon: 'iconqukuailian',
-      label: '块区域',
-      hasChidren: true,
-      type: '布局控件',
-      inputType: 'container',
-    },
-    {
-      icon: 'iconshuzuliebiao',
-      label: '数组表单',
-      hasChidren: true,
-      type: '布局控件',
-      inputType: 'formList',
-    },
-  ];
 
   componentDidMount = () => {
     this.init();
@@ -178,7 +94,7 @@ class FormDesign extends Component {
     // 拖拽元素的目标索引
     const { newIndex } = evt;
     if (!sourceId) return;
-    if (this.formTags.map(f => f.label).includes(sourceId)) {
+    if (formTags.map(f => f.label).includes(sourceId)) {
       // 初始新增
       const item = this.initItemConfig(sourceId);
       if (parentPath === 'containerRoot') {
@@ -225,16 +141,11 @@ class FormDesign extends Component {
     }
   };
 
-  goBack = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
   // 插入表单控件的模版
   initItemConfig = value => {
     const key = uuid4();
     const code = _uniqueId('item');
-    const { label: title, inputType } = this.formTags.find(f => f.label === value) || {};
+    const { label: title, inputType } = formTags.find(f => f.label === value) || {};
     switch (title) {
       case '单选框':
       case '多选框':
@@ -274,18 +185,6 @@ class FormDesign extends Component {
         return { key, code, inputType, title };
       case '日期框':
         return { key, code, inputType, title, style: '日' };
-      case '自动处理':
-        return {
-          key,
-          code,
-          inputType,
-          title,
-          method: '自动填充',
-          dealRange: [],
-          json: JSON.stringify({
-            dealFunc: '() => {}',
-          }),
-        };
       case '块区域':
         return { key, inputType, title, span: 24 };
       case '数组表单':
@@ -328,7 +227,6 @@ class FormDesign extends Component {
 
   // 渲染中间的容器内容，实现所见所得
   renderForm = config => {
-    const { data } = this.state;
     switch (config.inputType) {
       case 'radio': {
         if (config.style === '按钮') {
@@ -503,36 +401,6 @@ class FormDesign extends Component {
             {DateComponent}
           </Form.Item>
         );
-      }
-      case 'auto': {
-        if (config.method === '自动填充') {
-          return (
-            <Form.Item
-              label={ellipsisText(config.title, 18)}
-              required={!config.optional}
-              {...getFormItemLayout(config.title)}
-            >
-              {config.dealRange.map(key => (
-                <Tag key={key}>
-                  {(treeToFlatData(data, 'key').find(a => a.key === key) || {}).title}
-                </Tag>
-              ))}
-              {`(${config.method})`}
-            </Form.Item>
-          );
-        }
-        if (['地图选点', '关联路线', '地图绘制'].includes(config.method)) {
-          return (
-            <Form.Item
-              label={ellipsisText(config.title, 18)}
-              required={!config.optional}
-              {...getFormItemLayout(config.title)}
-            >
-              {config.method}
-            </Form.Item>
-          );
-        }
-        return <span />;
       }
       case 'cascader': {
         return (
@@ -837,7 +705,7 @@ class FormDesign extends Component {
                 <div key={i}>
                   <h4>{i}</h4>
                   <Sortable options={designConfig.sortableOption2}>
-                    {this.formTags.filter(f => f.type === i).map(f => (
+                    {formTags.filter(f => f.type === i).map(f => (
                       <div key={f.label} data-id={f.label}>
                         <Button
                           block
@@ -927,7 +795,6 @@ class FormDesign extends Component {
                   this.itemConfigNode = itemConfigNode;
                 }}
                 key={activeItemKey}
-                {..._pick(this.props, ['codeTotalLength', 'codePartLength'])}
                 activeItem={activeItem}
                 allFlowData={data}
                 changeData={this.changeData}
@@ -939,17 +806,5 @@ class FormDesign extends Component {
     );
   }
 }
-
-FormDesign.defaultProps = {
-  codeTotalLength: 40,
-  codePartLength: 20,
-};
-
-FormDesign.propTypes = {
-  // 编码整体长度限制
-  codeTotalLength: PropTypes.number,
-  // 编码每段长度限制
-  codePartLength: PropTypes.number,
-};
 
 export default FormDesign;

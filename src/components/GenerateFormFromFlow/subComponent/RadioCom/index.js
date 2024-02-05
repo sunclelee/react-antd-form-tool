@@ -3,21 +3,12 @@ import { Button, Col, Form, Input, Radio, Select, Icon } from 'antd';
 import _get from 'lodash/get';
 import _uniqBy from 'lodash/uniqBy';
 import PropTypes from 'prop-types';
-import { JSONparse } from '@/utils/common';
 import { renderFormItemLabel } from '../../func';
 
 class RadioCom extends PureComponent {
   state = {
     manualInput: false,
   };
-
-  componentDidMount() {
-    const { flow } = this.props;
-    if (!flow?.listArray?.length) {
-      // 需要远程请求数据
-      this.fetchListArray(flow.json);
-    }
-  }
 
   toggitManualInput = () => {
     const { manualInput } = this.state;
@@ -167,7 +158,11 @@ class RadioCom extends PureComponent {
   }
 }
 
-RadioCom.defaultProps = {};
+RadioCom.defaultProps = {
+  readOnly: false,
+  myStyle: {},
+  record: {},
+};
 
 RadioCom.propTypes = {
   flow: PropTypes.object.isRequired,

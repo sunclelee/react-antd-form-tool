@@ -101,19 +101,5 @@ export const getJsonConfigTemplate = flow => {
     }
     default:
   }
-  switch (flow?.inputType) {
-    case 'auto': {
-      if (flow?.method === '地图绘制') {
-        r.mapSketch = {
-          initialProperties: {
-            multiple: 2,
-          },
-          getRecordPinInfo: 'r => ({title:"",coord:[]})',
-        };
-      }
-      break;
-    }
-    default:
-  }
   return r;
 };
