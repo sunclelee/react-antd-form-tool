@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { Component } from 'react';
 import {
@@ -14,7 +15,9 @@ import {
   Popover,
   Tag,
 } from 'antd';
-import lodash from 'lodash';
+import _get from 'lodash/get';
+import _cloneDeep from 'lodash/cloneDeep';
+import _uniqueId from 'lodash/uniqueId';
 import {
   treeToFlatData,
   operateTree,
@@ -63,7 +66,6 @@ class ItemFormConfig extends Component {
     const {
       form: { getFieldDecorator, setFieldsValue, getFieldValue },
       allFlowData,
-      imgUrls,
     } = this.props;
     switch (flow?.inputType) {
       case 'radio':
@@ -108,7 +110,7 @@ class ItemFormConfig extends Component {
                 initialValue:
                   (flow &&
                     flow.listArray &&
-                    flow.listArray.map(f => ({ ...f, tempId: lodash.uniqueId() }))) ||
+                    flow.listArray.map(f => ({ ...f, tempId: _uniqueId() }))) ||
                   [],
                 valuePropName: 'list',
               })(
@@ -123,7 +125,7 @@ class ItemFormConfig extends Component {
             {['下拉', '滑出'].includes(getFieldValue('style')) && (
               <Form.Item label="开启选项搜索">
                 {getFieldDecorator('searchEnable', {
-                  initialValue: !!lodash.get(flow, 'searchEnable'),
+                  initialValue: !!_get(flow, 'searchEnable'),
                   valuePropName: 'checked',
                 })(<Checkbox />)}
               </Form.Item>
@@ -131,7 +133,7 @@ class ItemFormConfig extends Component {
             {flow?.inputType === 'radio' && (
               <Form.Item label="允许手动输入">
                 {getFieldDecorator('allowManualInput', {
-                  initialValue: !!lodash.get(flow, 'allowManualInput'),
+                  initialValue: !!_get(flow, 'allowManualInput'),
                   valuePropName: 'checked',
                 })(<Checkbox />)}
               </Form.Item>
@@ -198,13 +200,13 @@ class ItemFormConfig extends Component {
               <>
                 <Form.Item label="显示经纬度">
                   {getFieldDecorator('isShowLatAndLng', {
-                    initialValue: !!lodash.get(flow, 'isShowLatAndLng'),
+                    initialValue: !!_get(flow, 'isShowLatAndLng'),
                     valuePropName: 'checked',
                   })(<Checkbox />)}
                 </Form.Item>
                 <Form.Item label="自动计算桩号">
                   {getFieldDecorator('calcStation', {
-                    initialValue: !!lodash.get(flow, 'calcStation'),
+                    initialValue: !!_get(flow, 'calcStation'),
                     valuePropName: 'checked',
                   })(<Checkbox />)}
                 </Form.Item>
@@ -219,13 +221,13 @@ class ItemFormConfig extends Component {
                   }
                 >
                   {getFieldDecorator('isBindingStationForm', {
-                    initialValue: !!lodash.get(flow, 'isBindingStationForm'),
+                    initialValue: !!_get(flow, 'isBindingStationForm'),
                     valuePropName: 'checked',
                   })(<Checkbox />)}
                 </Form.Item>
                 <Form.Item label="允许修改省市县">
                   {getFieldDecorator('allowModifySSX', {
-                    initialValue: !!lodash.get(flow, 'allowModifySSX'),
+                    initialValue: !!_get(flow, 'allowModifySSX'),
                     valuePropName: 'checked',
                   })(<Checkbox />)}
                 </Form.Item>
@@ -238,7 +240,7 @@ class ItemFormConfig extends Component {
           <React.Fragment>
             <Form.Item label="文本类型" required>
               {getFieldDecorator('textType', {
-                initialValue: lodash.get(flow, 'textType', '单行文本'),
+                initialValue: _get(flow, 'textType', '单行文本'),
                 rules: [{ required: true, message: '请输入文本类型' }],
               })(
                 <Select style={{ width: '100%' }}>
@@ -267,7 +269,7 @@ class ItemFormConfig extends Component {
           <React.Fragment>
             <Form.Item label="单位">
               {getFieldDecorator('unit', {
-                initialValue: lodash.get(flow, 'unit'),
+                initialValue: _get(flow, 'unit'),
               })(<Input style={{ width: 204, marginRight: 12 }} />)}
               <Popover
                 trigger="click"
@@ -289,16 +291,16 @@ class ItemFormConfig extends Component {
             </Form.Item>
             <Form.Item label="范围">
               {getFieldDecorator('min', {
-                initialValue: lodash.get(flow, 'min'),
+                initialValue: _get(flow, 'min'),
               })(<InputNumber placeholder="最小" />)}
               <span style={{ margin: '0 5px ' }}>～</span>
               {getFieldDecorator('max', {
-                initialValue: lodash.get(flow, 'max'),
+                initialValue: _get(flow, 'max'),
               })(<InputNumber placeholder="最大" />)}
             </Form.Item>
             <Form.Item label="数字精度">
               {getFieldDecorator('precision', {
-                initialValue: lodash.get(flow, 'precision'),
+                initialValue: _get(flow, 'precision'),
               })(
                 <InputNumber
                   placeholder="小数点保留位数"
@@ -315,18 +317,18 @@ class ItemFormConfig extends Component {
           <React.Fragment>
             <Form.Item label="默认选中">
               {getFieldDecorator('defaultValue', {
-                initialValue: !!lodash.get(flow, 'defaultValue'),
+                initialValue: !!_get(flow, 'defaultValue'),
                 valuePropName: 'checked',
               })(<Checkbox />)}
             </Form.Item>
             <Form.Item label="选中的文字">
               {getFieldDecorator('checkedText', {
-                initialValue: lodash.get(flow, 'checkedText'),
+                initialValue: _get(flow, 'checkedText'),
               })(<Input />)}
             </Form.Item>
             <Form.Item label="未选中的文字">
               {getFieldDecorator('unCheckedText', {
-                initialValue: lodash.get(flow, 'unCheckedText'),
+                initialValue: _get(flow, 'unCheckedText'),
               })(<Input />)}
             </Form.Item>
           </React.Fragment>
@@ -338,7 +340,7 @@ class ItemFormConfig extends Component {
           <>
             <Form.Item label="级联数据关系">
               {getFieldDecorator('options', {
-                initialValue: lodash.get(flow, 'options'),
+                initialValue: _get(flow, 'options'),
                 rules: [
                   {
                     required: true,
@@ -393,7 +395,7 @@ class ItemFormConfig extends Component {
             </Form.Item>
             <Form.Item label="只显示最后一级">
               {getFieldDecorator('onlyShowLastLevel', {
-                initialValue: !!lodash.get(flow, 'onlyShowLastLevel'),
+                initialValue: !!_get(flow, 'onlyShowLastLevel'),
                 valuePropName: 'checked',
               })(<Checkbox />)}
             </Form.Item>
@@ -405,7 +407,7 @@ class ItemFormConfig extends Component {
           <>
             <Form.Item label="工具栏">
               {getFieldDecorator('controls', {
-                initialValue: lodash.get(flow, 'controls', []),
+                initialValue: _get(flow, 'controls', []),
               })(
                 <Select mode="multiple" style={{ width: '100%' }} allowClear>
                   {config.BraftEditorControls.map(i => (
@@ -416,12 +418,12 @@ class ItemFormConfig extends Component {
             </Form.Item>
             <Form.Item label="编辑框高度(px)">
               {getFieldDecorator('height', {
-                initialValue: lodash.get(flow, 'height'),
+                initialValue: _get(flow, 'height'),
               })(<InputNumber min={0} precision={0} style={{ width: '100%' }} />)}
             </Form.Item>
             <Form.Item label="单个文件大小(MB)">
               {getFieldDecorator(`mediaMaxSize`, {
-                initialValue: lodash.get(flow, 'mediaMaxSize'),
+                initialValue: _get(flow, 'mediaMaxSize'),
               })(
                 <InputNumber
                   min={0}
@@ -452,7 +454,7 @@ class ItemFormConfig extends Component {
   };
 
   getTreeWithoutFormlist = allFlowData => {
-    const t = lodash.cloneDeep(allFlowData);
+    const t = _cloneDeep(allFlowData);
     operateTree('del', t, {}, 'inputType', 'formList', false);
     return t;
   };
@@ -463,7 +465,7 @@ class ItemFormConfig extends Component {
     const hitChild = flat.find(f => f.key === key);
     if (hitChild && hitChild.parent) {
       const hit = flat.filter(f => f.inputType === 'formList' && f.key !== hitChild.parent);
-      const t = lodash.cloneDeep(allFlowData);
+      const t = _cloneDeep(allFlowData);
       hit.forEach(h => {
         operateTree('del', t, {}, 'key', h.key, true);
       });
@@ -477,7 +479,7 @@ class ItemFormConfig extends Component {
     const hitChild = flat.find(f => f.key === key);
     if (hitChild && hitChild.parent) {
       const hitFather = flat.find(f => f.key === hitChild.parent);
-      return lodash.get(hitFather, 'inputType') === 'formList';
+      return _get(hitFather, 'inputType') === 'formList';
     }
     return false;
   };
@@ -512,14 +514,14 @@ class ItemFormConfig extends Component {
         <Tabs
           animated={false}
           type="card"
-          tabBarExtraContent={<b>{lodash.get(activeItem, 'inputType')}</b>}
+          tabBarExtraContent={<b>{_get(activeItem, 'inputType')}</b>}
         >
           <TabPane key="常规" tab="常规" forceRender>
             <Form {...formItemLayout}>
               <div className={style.formStyle}>
                 <Form.Item label="标题">
                   {getFieldDecorator('title', {
-                    initialValue: lodash.get(flow, 'title'),
+                    initialValue: _get(flow, 'title'),
                     rules: [
                       {
                         required: true,
@@ -531,14 +533,14 @@ class ItemFormConfig extends Component {
                 {['container'].includes(flow.inputType) ? (
                   <Form.Item label="显示标题">
                     {getFieldDecorator('showTitle', {
-                      initialValue: lodash.get(flow, 'showTitle'),
+                      initialValue: _get(flow, 'showTitle'),
                       valuePropName: 'checked',
                     })(<Checkbox />)}
                   </Form.Item>
                 ) : (
                   <Form.Item label="字段编码">
                     {getFieldDecorator('code', {
-                      initialValue: lodash.get(flow, 'code'),
+                      initialValue: _get(flow, 'code'),
                       rules: [
                         { required: !['photo'].includes(flow.inputType), message: '请输入编码' },
                         {
@@ -550,7 +552,7 @@ class ItemFormConfig extends Component {
                 )}
                 <Form.Item label="占宽">
                   {getFieldDecorator('span', {
-                    initialValue: lodash.get(flow, 'span'),
+                    initialValue: _get(flow, 'span'),
                   })(
                     <InputNumber
                       min={0}
@@ -563,29 +565,29 @@ class ItemFormConfig extends Component {
                 </Form.Item>
                 {/* <Form.Item label="所属组名">
               {getFieldDecorator('groupName', {
-                initialValue: lodash.get(flow, 'groupName'),
+                initialValue: _get(flow, 'groupName'),
               })(<Input />)}
             </Form.Item> */}
                 {this.renderItemFormConfig(flow)}
                 <Form.Item label="可以不填">
                   {getFieldDecorator('optional', {
-                    initialValue: lodash.get(flow, 'optional'),
+                    initialValue: _get(flow, 'optional'),
                     valuePropName: 'checked',
                   })(<Checkbox />)}
                 </Form.Item>
                 <Form.Item label="提示说明">
                   {getFieldDecorator('placeholder', {
-                    initialValue: lodash.get(flow, 'placeholder'),
+                    initialValue: _get(flow, 'placeholder'),
                   })(<Input.TextArea allowclear="true" autosize={{ minRows: 2, maxRows: 4 }} />)}
                 </Form.Item>
                 <Form.Item label="备注">
                   {getFieldDecorator('remark', {
-                    initialValue: lodash.get(flow, 'remark'),
+                    initialValue: _get(flow, 'remark'),
                   })(<Input.TextArea autosize={{ minRows: 2, maxRows: 4 }} />)}
                 </Form.Item>
                 <Form.Item label="显示条件">
                   {getFieldDecorator('dependent.key', {
-                    initialValue: lodash.get(flow, 'dependent.key'),
+                    initialValue: _get(flow, 'dependent.key'),
                   })(
                     <Select style={{ width: '100%' }} placeholder="条件标题" allowClear>
                       {/* 依赖条件不显示自己和排在后面的选项，如果不是formList里的表单，也不会显示formList里的条件 */}
@@ -606,7 +608,7 @@ class ItemFormConfig extends Component {
                     </Select>
                   )}
                   {getFieldDecorator('dependent.option', {
-                    initialValue: lodash.get(flow, 'dependent.option'),
+                    initialValue: _get(flow, 'dependent.option'),
                   })(
                     <Select
                       mode="multiple"
@@ -614,7 +616,7 @@ class ItemFormConfig extends Component {
                       placeholder="条件选项"
                       allowClear
                     >
-                      {this.renderDependentOption(lodash.get(flow, 'dependent.key'))}
+                      {this.renderDependentOption(_get(flow, 'dependent.key'))}
                     </Select>
                   )}
                 </Form.Item>
@@ -641,7 +643,7 @@ class ItemFormConfig extends Component {
                 colon={false}
               >
                 {getFieldDecorator('json', {
-                  initialValue: lodash.get(flow, 'json'),
+                  initialValue: _get(flow, 'json'),
                   rules: [
                     {
                       validator: (rule, value, callback) => {

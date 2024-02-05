@@ -1,8 +1,12 @@
+/* eslint-disable import/extensions */
 /* eslint-disable no-param-reassign */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import uuid4 from 'uuid/v4';
-import lodash from 'lodash';
+import _get from 'lodash/get';
+import _set from 'lodash/set';
+import _trim from 'lodash/trim';
+import _cloneDeep from 'lodash/cloneDeep';
 import { Divider, Modal, Tree, Input, Button, Popconfirm, message } from 'antd';
 import { operateTree, checkCascaderOptionIsValid } from '@/utils/common';
 
@@ -17,7 +21,7 @@ const operateUuidForTree = (treeOption, action) => {
   if (Array.isArray(treeOption)) {
     for (let i = treeOption.length - 1; i >= 0; i -= 1) {
       if (action === 'add') {
-        if (!treeOption[i].uuid) lodash.set(treeOption[i], 'uuid', uuid4());
+        if (!treeOption[i].uuid) _set(treeOption[i], 'uuid', uuid4());
       } else {
         delete treeOption[i].uuid;
       }
@@ -77,7 +81,7 @@ class CascaderOptionTree extends PureComponent {
     );
     if (!optionIsValid) return;
     operateUuidForTree(cascaderOption, 'remove');
-    if (onConfirm) onConfirm(lodash.get(cascaderOption, '[0].children', []));
+    if (onConfirm) onConfirm(_get(cascaderOption, '[0].children', []));
     this.closeModal();
   };
 
@@ -130,7 +134,7 @@ class CascaderOptionTree extends PureComponent {
               style={{ width: 100 }}
               value={data.value}
               onChange={e => {
-                this.changeOption(data, 'append', { value: lodash.trim(e.target.value) });
+                this.changeOption(data, 'append', { value: _trim(e.target.value) });
               }}
             />
             <Divider type="vertical" />
@@ -139,7 +143,7 @@ class CascaderOptionTree extends PureComponent {
               style={{ width: 200 }}
               value={data.label}
               onChange={e => {
-                this.changeOption(data, 'append', { label: lodash.trim(e.target.value) });
+                this.changeOption(data, 'append', { label: _trim(e.target.value) });
               }}
             />
           </>
@@ -210,7 +214,7 @@ class CascaderOptionTree extends PureComponent {
   onDrop = info => {
     const dropData = info.node.props.dataRef;
     const dragData = info.dragNode.props.dataRef;
-    const moveData = lodash.cloneDeep(dragData);
+    const moveData = _cloneDeep(dragData);
     // 原有节点换一个uuid,避免删除时把移动后的节点给删了
     dragData.uuid = uuid4();
     const { cascaderOption } = this.state;

@@ -1,9 +1,11 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button } from 'antd';
-import lodash from 'lodash';
 import sortable from 'sortablejs';
+import _trim from 'lodash/trim';
+import _uniqueId from 'lodash/uniqueId';
 import { reorderArray } from '@/utils/common';
 import style from './index.less';
 
@@ -35,7 +37,7 @@ class EditableItemsForSelect extends React.PureComponent {
   addItem = () => {
     const { setFieldsValue, fieldName = 'list', list } = this.props;
     setFieldsValue({
-      [fieldName]: [...list, { text: '', value: '', tempId: lodash.uniqueId() }],
+      [fieldName]: [...list, { text: '', value: '', tempId: _uniqueId() }],
     });
   };
 
@@ -51,7 +53,7 @@ class EditableItemsForSelect extends React.PureComponent {
     setFieldsValue({
       [fieldName]: list.map((l, num) => {
         if (num === index) {
-          return { ...l, [key]: lodash.trim(e.target.value) };
+          return { ...l, [key]: _trim(e.target.value) };
         }
         return l;
       }),
@@ -78,7 +80,7 @@ class EditableItemsForSelect extends React.PureComponent {
         <div id="sortableForCellSelect">
           {list.map((item, index) => (
             <div
-              key={item.tempId || lodash.uniqueId()} // 最好还是固定key，否则每次渲染都会失去input焦点
+              key={item.tempId || _uniqueId()} // 最好还是固定key，否则每次渲染都会失去input焦点
               style={{
                 width: showTitle ? '125%' : undefined,
                 display: 'flex',

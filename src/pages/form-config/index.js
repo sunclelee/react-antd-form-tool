@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
@@ -24,18 +25,17 @@ import {
   Cascader,
   Switch,
 } from 'antd';
-import { parse } from 'qs';
 import Sortable from 'react-sortablejs';
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
-import { connect } from 'dva';
 import uuid4 from 'uuid/v4';
 import _get from 'lodash/get';
 import _pick from 'lodash/pick';
+import _uniq from 'lodash/uniq';
 import _cloneDeep from 'lodash/cloneDeep';
-import _uniqWith from 'lodash/uniqWith';
 import _uniqueId from 'lodash/uniqueId';
 import PropTypes from 'prop-types';
+import { FormIcon } from '@/components/FormIcon';
 import {
   treeToFlatData,
   operateTree,
@@ -44,7 +44,6 @@ import {
   JSONparse,
   reorderArray,
 } from '@/utils/common';
-import { FormIcon } from '@/components/FormIcon';
 import { saveAs, handleLoadfile } from '@/utils/file';
 import ItemFormConfig from './component/ItemFormConfig';
 import PreViewFlowFormModal from './component/PreViewFlowFormModal';
@@ -54,27 +53,20 @@ import style from './index.less';
 
 const { Option } = Select;
 
-@connect(({ loading: { effects } }) => ({
-  effects,
-}))
 class FormDesign extends Component {
   state = {
     data: [], // 表单数据
     loading: false,
     activeItemKey: '', // 选中的表单key
     activeItem: {}, // 选中的表单内容
-    imgUrls: [], // 所有图片的url
-    record: {}, // 数据库里的记录
   };
 
   formTags = [
-    // 没有children的组件, show表示this.getMethodParam.type显示条件
     {
       icon: 'icondanxuan',
       label: '单选框',
       hasChidren: false,
       type: '表单控件',
-      show: '123',
       inputType: 'radio',
     },
     {
@@ -82,7 +74,6 @@ class FormDesign extends Component {
       label: '多选框',
       hasChidren: false,
       type: '表单控件',
-      show: '123',
       inputType: 'multiple',
     },
     {
@@ -90,7 +81,6 @@ class FormDesign extends Component {
       label: '文本框',
       hasChidren: false,
       type: '表单控件',
-      show: '123',
       inputType: 'text',
     },
     {
@@ -98,7 +88,6 @@ class FormDesign extends Component {
       label: '数字框',
       hasChidren: false,
       type: '表单控件',
-      show: '123',
       inputType: 'number',
     },
     {
@@ -106,7 +95,6 @@ class FormDesign extends Component {
       label: '开关',
       hasChidren: false,
       type: '表单控件',
-      show: '13',
       inputType: 'switch',
     },
     {
@@ -114,47 +102,13 @@ class FormDesign extends Component {
       label: '日期框',
       hasChidren: false,
       type: '表单控件',
-      show: '123',
       inputType: 'date',
-    },
-    {
-      icon: 'iconzhaopian',
-      label: '照片上传',
-      hasChidren: false,
-      type: '上传控件',
-      show: '12',
-      inputType: 'photo',
-    },
-    {
-      icon: 'iconshipin',
-      label: '视频上传',
-      hasChidren: false,
-      type: '上传控件',
-      show: '1',
-      inputType: 'video',
-    },
-    {
-      icon: 'iconyinpin',
-      label: '音频上传',
-      hasChidren: false,
-      type: '上传控件',
-      show: '1',
-      inputType: 'audio',
-    },
-    {
-      icon: 'iconwenjian',
-      label: '文件上传',
-      hasChidren: false,
-      type: '上传控件',
-      show: '1',
-      inputType: 'file',
     },
     {
       icon: 'iconjilian',
       label: '级联选择',
       hasChidren: true,
       type: '高级控件',
-      show: '123',
       inputType: 'cascader',
     },
     {
@@ -162,7 +116,6 @@ class FormDesign extends Component {
       label: '富文本',
       hasChidren: false,
       type: '高级控件',
-      show: '1',
       inputType: 'richText',
     },
     {
@@ -170,7 +123,6 @@ class FormDesign extends Component {
       label: '自动处理',
       hasChidren: false,
       type: '高级控件',
-      show: '12',
       inputType: 'auto',
     },
     // 有children的组件
@@ -179,7 +131,6 @@ class FormDesign extends Component {
       label: '块区域',
       hasChidren: true,
       type: '布局控件',
-      show: '123',
       inputType: 'container',
     },
     {
@@ -187,43 +138,17 @@ class FormDesign extends Component {
       label: '数组表单',
       hasChidren: true,
       type: '布局控件',
-      show: '123',
       inputType: 'formList',
     },
   ];
 
-  hasMounted = false;
-
-  getMethodParam = {}; // url的get参数
-
-  componentWillMount() {
-    this.getMethodParam = parse(window.location.href.split('?')[1]);
-  }
-
-  componentDidMount = async () => {
-    const { dispatch, qiniuUploadParam } = this.props;
-    this.hasMounted = true;
-    const { type, id } = this.getMethodParam;
-    if (!type || !id) return;
-    this.setState({ loading: true });
-    const res = await dispatch({
-      type: designConfig.formType[type].dispatchTypeForQuery,
-      payload: {
-        save: false,
-        data: {
-          id,
-        },
-      },
-    });
-    const dataConfig = JSONparse(_get(res, '[0]flow', '[]'));
-    if (this.hasMounted) {
-      this.setState({ data: [...dataConfig], loading: false, record: res[0] || {} });
-    }
+  componentDidMount = () => {
+    this.init();
   };
 
-  componentWillUnmount() {
-    this.hasMounted = false;
-  }
+  init = () => {
+    this.setState({ loading: false, data: designConfig.defaultFlows });
+  };
 
   judgeAddIsValid = (data, sourceId, parentPath) => {
     // 当源来自containerRoot时，sourceId是uuid，类型需要去data tree里找
@@ -236,13 +161,6 @@ class FormDesign extends Component {
         return `${sourceType}不能放进数组表单`;
       }
     }
-    // if (!['单选框', 'radio'].includes(sourceType)) {
-    //   const hit = findDataInTree(data, 'key', parentPath);
-    //   if (_get(hit, '[0].inputType') === 'cascader') {
-    //     this.forceUpdate();
-    //     return '只有单选框才能放进级联选择';
-    //   }
-    // }
     return '';
   };
 
@@ -354,39 +272,6 @@ class FormDesign extends Component {
         return { key, code, inputType, title, style: '文本' };
       case '开关':
         return { key, code, inputType, title };
-      case '照片上传':
-        return {
-          key,
-          code,
-          inputType,
-          title,
-          storagePath: `{{currentProjectId}}/${this.getMethodParam.module || ''}`,
-        };
-      case '视频上传':
-        return {
-          key,
-          code,
-          inputType,
-          title,
-          accept: '.mp4,.mov',
-          storagePath: `{{currentProjectId}}/${this.getMethodParam.module || ''}`,
-        };
-      case '音频上传':
-        return {
-          key,
-          code,
-          inputType,
-          title,
-          storagePath: `{{currentProjectId}}/${this.getMethodParam.module || ''}`,
-        };
-      case '文件上传':
-        return {
-          key,
-          code,
-          inputType,
-          title,
-          storagePath: `{{currentProjectId}}/${this.getMethodParam.module || ''}`,
-        };
       case '日期框':
         return { key, code, inputType, title, style: '日' };
       case '自动处理':
@@ -437,9 +322,8 @@ class FormDesign extends Component {
   };
 
   exportConfig = () => {
-    const { data, record } = this.state;
-    const { kind, name, version } = record || {};
-    saveAs(new Blob([JSON.stringify(data)]), `${kind}-${name}-V${version}.JSON`);
+    const { data } = this.state;
+    saveAs(new Blob([JSON.stringify(data)]), '表单配置.JSON');
   };
 
   // 渲染中间的容器内容，实现所见所得
@@ -650,58 +534,6 @@ class FormDesign extends Component {
         }
         return <span />;
       }
-      case 'photo': {
-        const { imgUrls } = this.state;
-        return (
-          <React.Fragment>
-            <Form.Item
-              label="图片说明"
-              {...getFormItemLayout(config.title)}
-              className={style.picInspect}
-            >
-              {config.placeholder}
-            </Form.Item>
-            <Form.Item
-              label={ellipsisText(config.title, 18)}
-              required={!config.optional}
-              {...getFormItemLayout(config.title)}
-            >
-              <div className={style.photoStyle}>
-                {(imgUrls || []).filter(i => (config.image || []).includes(i.key)).map(item => (
-                  <img src={item.url} alt="加载失败" key={item.key.slice(-10, -5)} />
-                ))}
-                <div className={style.upload}>
-                  <Icon type="plus" style={{ fontSize: '24px' }} />
-                  <div>上传</div>
-                </div>
-              </div>
-            </Form.Item>
-          </React.Fragment>
-        );
-      }
-      case 'video':
-      case 'audio':
-      case 'file':
-        return (
-          <>
-            <Form.Item
-              label="说明"
-              {...getFormItemLayout(config.title)}
-              className={style.picInspect}
-            >
-              {config.placeholder}
-            </Form.Item>
-            <Form.Item
-              label={ellipsisText(config.title, 18)}
-              required={!config.optional}
-              {...getFormItemLayout(config.title)}
-            >
-              <Button>
-                <Icon type="upload" /> 上传
-              </Button>
-            </Form.Item>
-          </>
-        );
       case 'cascader': {
         return (
           <React.Fragment>
@@ -924,7 +756,6 @@ class FormDesign extends Component {
 
   // 表单配置改变时动态改变state中的data，达到所见即所得的效果
   changeData = (activeItem, change) => {
-    // console.log('change', change);
     const { data } = this.state;
     if (activeItem) {
       // 依赖是两层结构，单独处理
@@ -944,29 +775,11 @@ class FormDesign extends Component {
   };
 
   submitHandle = () => {
-    const { type, id } = this.getMethodParam;
-    if ([type, id].some(i => !i)) {
-      message.error('参数不足！');
-      return;
-    }
     // 为了让本页面能更独立地复用，表单的提交只负责修改表单内容
-    const { dispatch } = this.props;
-    const { data, record } = this.state;
+    const { data } = this.state;
     async function pushData() {
-      await dispatch({
-        type: _get(designConfig.formType[type], 'dispatchTypeForUpdate'),
-        payload: {
-          flow: data,
-          record,
-        },
-      });
-      setTimeout(() => {
-        const fatherWindowReload = _get(designConfig.formType[type], 'fatherWindowReload');
-        if (!fatherWindowReload) return;
-        // 更新父窗口的数据
-        const fatherReloadFun = _get(window.opener, fatherWindowReload);
-        if (typeof fatherReloadFun === 'function') fatherReloadFun();
-      }, 1000);
+      message.info('提交成功！请在控制台查看结果');
+      console.log('提交的数据：', data);
     }
     const validError = this.judgeFLow(data);
     if (validError && validError !== '编码必须唯一！') {
@@ -987,7 +800,7 @@ class FormDesign extends Component {
   judgeFLow = (flows = []) => {
     // 扁平化
     const flatFlow = treeToFlatData(flows, 'key');
-    if (flatFlow.length === 0 && this.getMethodParam?.type !== '3') return '至少需要一个表单!';
+    if (flatFlow.length === 0) return '至少需要一个表单!';
     const keys = flatFlow.map(f => f.key);
     if (keys.length !== _uniq(keys).length) return 'key值必须存在且唯一!';
     const codes = flatFlow.map(f => f.code).filter(f => f);
@@ -1010,51 +823,33 @@ class FormDesign extends Component {
   };
 
   render() {
-    const { loading, activeItemKey, activeItem, imgUrls, record } = this.state;
-    const { effects } = this.props;
-    const getTitle = _get(designConfig.formType[this.getMethodParam.type], 'getTitle');
-    const dispatchTypeForUpdate = _get(
-      designConfig.formType[this.getMethodParam.type],
-      'dispatchTypeForUpdate'
-    );
-    let { data } = this.state;
-    if (this.getMethodParam.type === '2') {
-      // type为2（外业调查）时，不需要全量上传控件
-      data = data.filter(
-        d =>
-          !this.formTags
-            .filter(f => !f.show.includes('2'))
-            .map(f => f.inputType)
-            .includes(d.inputType)
-      );
-    }
+    const { loading, activeItemKey, activeItem } = this.state;
+    const { data } = this.state;
     return (
       <Spin spinning={loading} size="large">
-        <Card title={getTitle ? getTitle(record) : '表单设计'} bodyStyle={{ padding: '0' }}>
+        <Card title="表单设计" bodyStyle={{ padding: '0' }}>
           <div style={{ display: 'flex ', height: 'calc(100vh - 60px)', overflow: 'auto' }}>
             <div
               data-id="控件"
               style={{ flex: '1', padding: '12px', borderRight: '1px solid #eae2e2' }}
             >
-              {['表单控件', '上传控件', '布局控件', '高级控件'].map(i => (
+              {['表单控件', '布局控件', '高级控件'].map(i => (
                 <div key={i}>
                   <h4>{i}</h4>
                   <Sortable options={designConfig.sortableOption2}>
-                    {this.formTags
-                      .filter(f => f.type === i && f.show.includes(this.getMethodParam.type))
-                      .map(f => (
-                        <div key={f.label} data-id={f.label}>
-                          <Button
-                            block
-                            style={{
-                              marginBottom: '5px',
-                              backgroundColor: 'rgba(56, 99, 218, 0.2)',
-                            }}
-                          >
-                            <FormIcon type={f.icon} /> {f.label}
-                          </Button>
-                        </div>
-                      ))}
+                    {this.formTags.filter(f => f.type === i).map(f => (
+                      <div key={f.label} data-id={f.label}>
+                        <Button
+                          block
+                          style={{
+                            marginBottom: '5px',
+                            backgroundColor: 'rgba(56, 99, 218, 0.2)',
+                          }}
+                        >
+                          <FormIcon type={f.icon} /> {f.label}
+                        </Button>
+                      </div>
+                    ))}
                   </Sortable>
                   <p />
                 </div>
@@ -1064,12 +859,7 @@ class FormDesign extends Component {
               <div
                 style={{ height: '40px', lineHeight: '40px', borderBottom: '1px solid #eae2e2' }}
               >
-                <Button
-                  type="link"
-                  icon="check-circle"
-                  onClick={this.submitHandle}
-                  loading={!!effects[dispatchTypeForUpdate]}
-                >
+                <Button type="link" icon="check-circle" onClick={this.submitHandle}>
                   <b> 提交</b>
                 </Button>
                 <Popconfirm
@@ -1104,7 +894,6 @@ class FormDesign extends Component {
                 </Upload>
               </div>
               {/* 表单容器 */}
-
               <div
                 data-id="containerRoot"
                 style={{ height: 'calc(100% - 40px)', overflow: 'auto', padding: '5px' }}
@@ -1142,8 +931,6 @@ class FormDesign extends Component {
                 activeItem={activeItem}
                 allFlowData={data}
                 changeData={this.changeData}
-                imgUrls={imgUrls}
-                record={record}
               />
             </div>
           </div>
@@ -1154,20 +941,11 @@ class FormDesign extends Component {
 }
 
 FormDesign.defaultProps = {
-  qiniuUploadParam: true,
   codeTotalLength: 40,
   codePartLength: 20,
 };
 
 FormDesign.propTypes = {
-  // 七牛上传参数
-  qiniuUploadParam: PropTypes.oneOfType([
-    PropTypes.bool, // 如果是布尔值表示是否使用默认配置
-    PropTypes.shape({
-      bucketId: PropTypes.string.isRequired,
-      service: PropTypes.string.isRequired,
-    }),
-  ]),
   // 编码整体长度限制
   codeTotalLength: PropTypes.number,
   // 编码每段长度限制

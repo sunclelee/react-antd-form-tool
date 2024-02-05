@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+import _get from 'lodash/get';
+
 /**
  * 把嵌套children的树结构摊平
  * @name treeToFlatData
@@ -59,7 +62,7 @@ export const findDataInTree = (tree, keyField = 'id', value) => {
  */
 export const operateTree = (action, tree, data, keyField = 'id', value, onlyOne = true) => {
   for (let i = tree.length - 1; i >= 0; i -= 1) {
-    if (lodash.get(tree[i], keyField) === value) {
+    if (_get(tree[i], keyField) === value) {
       switch (action) {
         case 'del':
           tree.splice(i, 1);

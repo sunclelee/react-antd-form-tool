@@ -1,27 +1,5 @@
 export default {
-  formType: {
-    '1': {
-      name: '通用表单',
-      dispatchTypeForQuery: 'formConfig/fetchUniversalConfig',
-      dispatchTypeForUpdate: 'formConfig/updateFlow',
-      fatherWindowReload: 'fetchUniversalFlowList', // 重载父窗体的数据
-      getTitle: r => `通用表单【${r.kind || ''}-${r.name || ''}】`,
-    },
-    '2': {
-      name: '调查信息输入表单',
-      dispatchTypeForQuery: 'surveyTemplate/queryInputSurveyForm',
-      dispatchTypeForUpdate: 'surveyTemplate/updateSurveyFlow',
-      fatherWindowReload: 'fetchFormList', // 重载父窗体的数据
-      getTitle: r => `调查信息输入表单【${r.name || ''}】`,
-    },
-    '3': {
-      name: '流程表单',
-      dispatchTypeForQuery: 'workflow/fetchWorkflow',
-      dispatchTypeForUpdate: 'workflow/updateFormFlow',
-      fatherWindowReload: 'fetchWorkflowList', // 重载父窗体的数据
-      getTitle: r => `流程表单【${r.kind || ''}-${r.name || ''}】`,
-    },
-  },
+  defaultFlows: [],
   sortableOption: {
     animation: 150,
     fallbackOnBody: true,
